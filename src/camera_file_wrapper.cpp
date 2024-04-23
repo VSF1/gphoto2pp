@@ -110,7 +110,7 @@ namespace gphoto2pp
 			// Release current objects resource
 			if(m_cameraFile != nullptr)
 			{
-				gphoto2::gp_file_ref(m_cameraFile);
+				gphoto2pp::checkResponseSilent(gphoto2::gp_file_unref(m_cameraFile),"gp_file_unref"); // FIXED resource leak
 				m_cameraFile = nullptr;
 			}
 			
@@ -143,6 +143,21 @@ namespace gphoto2pp
 		
 		return std::vector<char>{buffer, buffer+size};
 	}
+
+
+	unsigned long int CameraFileWrapper::getSize() const
+	{
+		FILE_LOG(logDEBUG) << "CameraFileWrapper getSize";
+				
+		unsigned long int size;
+		
+		gphoto2pp::checkResponse(gphoto2::gp_file_get_data_and_size(m_cameraFile, NULL, &size),"gp_file_get_data_and_size");
+		
+		FILE_LOG(logDEBUG) << "bufferSize: '"<<size<<"'";
+		
+		return size;
+	}
+	
 	
 	void CameraFileWrapper::setDataAndSize(std::vector<char> const & file)
 	{

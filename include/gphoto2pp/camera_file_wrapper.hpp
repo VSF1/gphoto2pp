@@ -74,7 +74,15 @@ namespace gphoto2pp
 		 * \throw GPhoto2pp::exceptions::gphoto2_exception
 		 */
 		std::vector<char> getDataAndSize() const;
-		
+
+		/**
+		 * \brief Gets the file's size.
+		 * \return the size of the image
+		 * \note Direct wrapper for <tt>gp_file_get_data_and_size(...)</tt>
+		 * \throw GPhoto2pp::exceptions::gphoto2_exception
+		 */
+		unsigned long int getSize() const;
+
 		/**
 		 * \brief Sets the camera file's binary data
 		 * \param[in]	file	which will be written into the gphoto2 CameraFile struct

@@ -17,7 +17,7 @@ set(MYLIB_VERSION_STRING ${MYLIB_VERSION_MAJOR}.${MYLIB_VERSION_MINOR}.${MYLIB_V
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/modules/)
 
 # finds the current version of libgphoto2 installed
-find_package( Gphoto2 REQUIRED )
+find_package( Gphoto2 ) # REQUIRED
 if(GPHOTO2_FOUND)
 	include_directories(${Gphoto2_INCLUDE_DIRS})
 	list(APPEND LIBS ${Gphoto2_LIBRARIES})
@@ -25,7 +25,7 @@ if(GPHOTO2_FOUND)
 	# Gphoto 2.5 had breaking api changes that weren't compatable with older versions.
 	# Although I'm developing with the latest in mind, there's no reason this wrapper
 	# shouldn't work for versions less than 2.5 (as most linux distros still use 2.4.14)
-	if(${GPHOTO2_VERSION_STRING} VERSION_LESS "2.5")
+	if(${Gphoto2_VERSION_STRING} VERSION_LESS "2.5")
 		add_definitions("-DGPHOTO_LESS_25")
 	endif()
 endif()

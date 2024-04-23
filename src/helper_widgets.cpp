@@ -67,7 +67,8 @@ namespace gphoto2pp
 			
 			getWidgetSummary(parentWidget, std::string{""}, allWidgetNames, showFullName, false, CameraWidgetTypeWrapper::Window); // we could have passed in anything for the widget type because it will be ignored, we just chose Window
 			
-			return std::move(allWidgetNames);
+			//return std::move(allWidgetNames);
+			return allWidgetNames;
 			
 			//~ return getAllWidgetsNamesOfType(parentWidget, CameraWidgetTypeWrapper::Unassigned, showFullName);
 		}
@@ -78,7 +79,8 @@ namespace gphoto2pp
 			
 			getWidgetSummary(parentWidget, std::string{""}, allWidgetNames, showFullName, true, filterByWidgetType);
 			
-			return std::move(allWidgetNames);
+			return allWidgetNames;
+			//return std::move(allWidgetNames);
 		}
 	}
 }

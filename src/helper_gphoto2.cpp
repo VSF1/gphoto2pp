@@ -96,12 +96,13 @@ namespace gphoto2pp
 			throw exceptions::NoCameraFoundError("autoDetect(multiple)");
 		}
 		
-		return std::move(cameraListWrapper);
+		// return std::move(cameraListWrapper);
+		return cameraListWrapper;
 	}
 	
 	int checkResponse(int result, std::string&& methodName)
 	{
-		if(result < 0)
+		if(result < 0) 
 		{
 			std::stringstream errorMessage;
 			errorMessage << methodName << ": failed with return code '" << result << "' and the reason is: '" << gphoto2::gp_result_as_string(result) << "'";

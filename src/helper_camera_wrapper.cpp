@@ -56,6 +56,13 @@ namespace gphoto2pp
 			// Not sure if I should close the file in here, or let the user do it. I'll let the user do it for now.
 		}
 		
+		std::vector<char> capturePreview(CameraWrapper& cameraWrapper)
+		{
+			CameraFileWrapper cameraFile = cameraWrapper.capturePreview(); // No point in duplicating code, call overloaded method
+			
+			return cameraFile.getDataAndSize();
+		}
+		
 		void capture(CameraWrapper& cameraWrapper, CameraFileWrapper& cameraFile, bool autoDeleteImageFromSrc /* = false */, CameraCaptureTypeWrapper const & captureType /* = Image */, CameraFileTypeWrapper const & fileType /* = Normal */)
 		{
 			auto cameraFilePath = cameraWrapper.capture(captureType);

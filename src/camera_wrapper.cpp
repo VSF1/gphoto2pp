@@ -285,7 +285,8 @@ namespace gphoto2pp
 		
 		auto rootWidget = WindowWidget{cameraWidget};
 		rootWidget.unref(); // This will have an extra ref added because of the constructor. And so we need to remove it.
-		return std::move(rootWidget);
+		// std::move(rootWidget);
+		return rootWidget;
 	}
 
 	void CameraWrapper::setConfig(CameraWidgetWrapper const & cameraWidget)
@@ -325,8 +326,7 @@ namespace gphoto2pp
 				}
 				catch (...)
 				{
-					FILE_LOG(logCRITICAL) << "An Exception was thrown when waiting for camera events. The Camera possibly lost connection with the computer";
-					
+					FILE_LOG(logCRITICAL) << "An Exception was thrown when waiting for camera events. The Camera possibly lost connection with the computer";					
 					return false;
 				}
 				
@@ -364,6 +364,7 @@ namespace gphoto2pp
 					}
 				}
 			}
+			FILE_LOG(logINFO) << "Stopped to listen for camera events";
 			return true;
 		});
 		
@@ -422,8 +423,6 @@ namespace gphoto2pp
 		
 		return cameraList;
 	}
-	
-	
 	
 	void CameraWrapper::folderDeleteAll(std::string const & folder)
 	{

@@ -58,6 +58,14 @@ namespace gphoto2pp
 		void capturePreview(CameraWrapper& cameraWrapper, std::ostream& outputStream);
 		
 		/**
+		 * \brief Takes a preview picture from the camera.
+		 * This capture type might not be supported by all cameras (requires a live view/mirror lockup mode for continuous captures)
+		 * \param[in]	cameraWrapper	instance which will be used to issue the capture_preview command
+		 * \throw GPhoto2pp::exceptions::gphoto2_exception
+		 */
+		std::vector<char> capturePreview(CameraWrapper& cameraWrapper);
+		
+		/**
 		 * \brief Captures a file from the camera.
 		 * \param[in]	cameraWrapper	instance which will be used to issue the capture command
 		 * \param[out]	cameraFile	will have the captured file's contents loaded into it's instance
