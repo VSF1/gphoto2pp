@@ -1,0 +1,3 @@
+[submodule "extern/libgphoto2"]
+	path = extern/libgphoto2
+	url = https://github.com/VSF1/libgphoto2
