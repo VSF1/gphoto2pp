@@ -50,7 +50,7 @@ jobs:
 
     - name: install dependencies
       run: |
-        sudo apt install libgphoto2-dev libgphoto2-2 gphoto2
+        sudo apt install libgphoto2-dev gphoto2
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
       id: strings
