@@ -111,7 +111,7 @@ TLogLevel Log<T>::FromString(const std::string& level)
 {
     TLogLevel logLevel = logINFO;
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__clang__)
     switch (level) {
         case "DEBUG3"   : logLevel = logDEBUG3;     break;
         case "DEBUG2"   : logLevel = logDEBUG2;     break;
