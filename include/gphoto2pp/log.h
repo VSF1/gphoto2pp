@@ -111,6 +111,7 @@ TLogLevel Log<T>::FromString(const std::string& level)
 {
     TLogLevel logLevel = logINFO;
 
+#ifdef __GNUC__
     switch (level) {
         case "DEBUG3"   : logLevel = logDEBUG3;     break;
         case "DEBUG2"   : logLevel = logDEBUG2;     break;
@@ -129,7 +130,23 @@ TLogLevel Log<T>::FromString(const std::string& level)
             Log<T>().Get(logWARN) << "Unknown logging level '" << level << "'. Using INFO level as default.";
             break;
     }
-
+#else
+    if (level == "EMERGENCY") logLevel = logEMERGENCY;
+    else if (level == "ALERT") logLevel = logALERT;
+    else if (level == "CRITICAL") logLevel = logCRITICAL;
+    else if (level == "ERROR") logLevel = logERROR;
+    else if (level == "WARN") logLevel = logWARN;
+    else if (level == "WARN1") logLevel = logWARN1;
+    else if (level == "WARN2") logLevel = logWARN2;
+    else if (level == "WARN3") logLevel = logWARN3;
+    else if (level == "INFO") logLevel = logINFO;
+    else if (level == "DEBUG") logLevel = logDEBUG;
+    else if (level == "DEBUG1") logLevel = logDEBUG1;
+    else if (level == "DEBUG2") logLevel = logDEBUG2;
+    else if (level == "DEBUG3") logLevel = logDEBUG3;
+    else
+        Log<T>().Get(logWARN) << "Unknown logging level '" << level << "'. Using INFO level as default.";
+#endif
     return logLevel;
 }
 
