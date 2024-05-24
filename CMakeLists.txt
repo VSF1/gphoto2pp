@@ -17,7 +17,7 @@ set (GPHOTO2PP_VERSION_STRING ${GPHOTO2PP_VERSION_MAJOR}.${GPHOTO2PP_VERSION_MIN
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/modules/)
 
 # finds the current version of libgphoto2 installed
-find_package (GPHOTO2) # REQUIRED
+find_package (GPHOTO2 REQUIRED) # REQUIRED
 if (GPHOTO2_FOUND)
 	include_directories (${GPHOTO2_INCLUDE_DIRS})
 	list (APPEND LIBS ${GPHOTO2_LIBRARIES})
@@ -67,7 +67,7 @@ include_directories ("include")
 
 # sets the shared library version
 # http://cmake.3232098.n2.nabble.com/Version-in-name-of-shared-library-td7581530.html
-set_target_properties (gphoto2pp PROPERTIES VERSION ${MYLIB_VERSION_STRING} SOVERSION ${MYLIB_VERSION_MAJOR})
+set_target_properties (gphoto2pp PROPERTIES VERSION ${GPHOTO2PP_VERSION_STRING} SOVERSION ${GPHOTO2PP_VERSION_MAJOR})
 
 # create pkg-config files for configuration in non-cmake projects
 configure_file (gphoto2pp.pc.in gphoto2pp.pc @ONLY)
@@ -83,23 +83,28 @@ if (CMAKE_BUILD_TYPE MATCHES "RELEASE")
 	install (FILES ${CMAKE_BINARY_DIR}/gphoto2pp.pc DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig)
 endif (CMAKE_BUILD_TYPE MATCHES "RELEASE")
 
-###########
+########################################################################################################################
 # Examples
-###########
+########################################################################################################################
 add_subdirectory (examples)
 
-#############
+########################################################################################################################
+# External Project
+########################################################################################################################
+#add_subdirectory (extern)
+
+########################################################################################################################
 # Unit Tests
-#############
+########################################################################################################################
 # for now only add unit tests in dev mode
 if (CMAKE_BUILD_TYPE MATCHES "DEBUG")
 	enable_testing ()
 	add_subdirectory (tests)
 endif (CMAKE_BUILD_TYPE MATCHES "DEBUG")
 
-###############################
+########################################################################################################################
 # Docs generation with Doxygen
-###############################
+########################################################################################################################
 if (CMAKE_BUILD_TYPE MATCHES "DEBUG")
 	find_package (Doxygen)
 	if (DOXYGEN_FOUND)
