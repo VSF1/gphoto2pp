@@ -1,13 +1,19 @@
 cmake_minimum_required (VERSION 3.10)
 project (GPHOTO2PP DESCRIPTION "A C++ wrapper for libgphoto2")
 
+# Configuration specific to being the main project
+if(PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
+    set(CMAKE_VERBOSE_MAKEFILE ON)
+    set(GPHOTO2PP_NOT_SUBPROJECT ON)
+endif(PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
+
 if (CMAKE_BUILD_TYPE)
-    message ("Building ${CMAKE_BUILD_TYPE} build.")
+    message ("Building ${PROJECT_NAME} in ${CMAKE_BUILD_TYPE} build.")
 elseif (NOT CMAKE_BUILD_TYPE)
     message (FATAL_ERROR "No build type specified. Use -DCMAKE_BUILD_TYPE=[DEBUG|RELEASE] to specify.")
 endif (CMAKE_BUILD_TYPE)
 
-#set the version of our library
+# set the version of our library
 # MAJOR, is significant breaking changes, MINOR, is when we might have changed signatures of existing functions, PATCH, is just bug fixes and no breaking changes
 set (GPHOTO2PP_VERSION_MAJOR 1)
 set (GPHOTO2PP_VERSION_MINOR 0)
@@ -34,11 +40,11 @@ include (GNUInstallDirs)
 
 if (UNIX)
 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
-	if (CMAKE_BUILD_TYPE MATCHES "RELEASE")
+	if (CMAKE_BUILD_TYPE MATCHES "^(RELEASE|Release)")
 		set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
-	elseif (CMAKE_BUILD_TYPE MATCHES "DEBUG")
+	elseif (CMAKE_BUILD_TYPE MATCHES "^(DEBUG|Debug)")
 		set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
-	endif (CMAKE_BUILD_TYPE MATCHES "RELEASE")
+	endif (CMAKE_BUILD_TYPE MATCHES "^(RELEASE|Release)")
 else (UNIX)
   # I have never tried it on any other OS. I suspect apple will work.
   message (FATAL_ERROR "I have never tried this on a non Linux machine, please try at your own risk")
@@ -73,7 +79,7 @@ set_target_properties (gphoto2pp PROPERTIES VERSION ${GPHOTO2PP_VERSION_STRING} 
 configure_file (gphoto2pp.pc.in gphoto2pp.pc @ONLY)
 
 # only offer install option if they compiled with release mode
-if (CMAKE_BUILD_TYPE MATCHES "RELEASE")
+if (CMAKE_BUILD_TYPE MATCHES "^(RELEASE|Release)")
 	# adds the 'make install' targets to copy the shared library to /usr/local/lib/ directory
 	install (TARGETS gphoto2pp DESTINATION ${CMAKE_INSTALL_LIBDIR} )
 	# adds all the relevant headers to /usr/local/include/gphoto2pp when ``make install`` is executed
@@ -81,7 +87,7 @@ if (CMAKE_BUILD_TYPE MATCHES "RELEASE")
 
 	# install the pkg-config config to system folder
 	install (FILES ${CMAKE_BINARY_DIR}/gphoto2pp.pc DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig)
-endif (CMAKE_BUILD_TYPE MATCHES "RELEASE")
+endif (CMAKE_BUILD_TYPE MATCHES "^(RELEASE|Release)")
 
 ########################################################################################################################
 # Examples
@@ -97,31 +103,31 @@ add_subdirectory (examples)
 # Unit Tests
 ########################################################################################################################
 # for now only add unit tests in dev mode
-if (CMAKE_BUILD_TYPE MATCHES "DEBUG")
+if (CMAKE_BUILD_TYPE MATCHES "^(DEBUG|Debug)")
 	enable_testing ()
 	add_subdirectory (tests)
-endif (CMAKE_BUILD_TYPE MATCHES "DEBUG")
+endif (CMAKE_BUILD_TYPE MATCHES "^(DEBUG|Debug)")
 
 ########################################################################################################################
 # Docs generation with Doxygen
 ########################################################################################################################
-if (CMAKE_BUILD_TYPE MATCHES "DEBUG")
+if (CMAKE_BUILD_TYPE MATCHES "^(DEBUG|Debug)")
 	find_package (Doxygen)
 	if (DOXYGEN_FOUND)
 		add_custom_target (doc ${DOXYGEN_EXECUTABLE} ${CMAKE_SOURCE_DIR}/Doxyfile
 			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 			COMMENT "Generating source code documentation with Doxygen." VERBATIM)
 	endif (DOXYGEN_FOUND)
-endif (CMAKE_BUILD_TYPE MATCHES "DEBUG")
+endif (CMAKE_BUILD_TYPE MATCHES "^(DEBUG|Debug)")
 
 ###################
 # uninstall target
 ###################
-if (CMAKE_BUILD_TYPE MATCHES "RELEASE")
+if (CMAKE_BUILD_TYPE MATCHES "^(RELEASE|Release)")
 	configure_file (
 		"${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
 		"${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
 		IMMEDIATE @ONLY)
 	add_custom_target (uninstall
 		COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
-endif (CMAKE_BUILD_TYPE MATCHES "RELEASE")
+endif (CMAKE_BUILD_TYPE MATCHES "^(RELEASE|Release)")
