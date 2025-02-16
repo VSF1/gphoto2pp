@@ -73,7 +73,7 @@ set_target_properties (gphoto2pp PROPERTIES VERSION ${GPHOTO2PP_VERSION_STRING} 
 configure_file (gphoto2pp.pc.in gphoto2pp.pc @ONLY)
 
 # only offer install option if they compiled with release mode
-if (CMAKE_BUILD_TYPE MATCHES "RELEASE")
+if (CMAKE_BUILD_TYPE MATCHES "^(RELEASE|Release)")
 	# adds the 'make install' targets to copy the shared library to /usr/local/lib/ directory
 	install (TARGETS gphoto2pp DESTINATION ${CMAKE_INSTALL_LIBDIR} )
 	# adds all the relevant headers to /usr/local/include/gphoto2pp when ``make install`` is executed
@@ -81,12 +81,14 @@ if (CMAKE_BUILD_TYPE MATCHES "RELEASE")
 
 	# install the pkg-config config to system folder
 	install (FILES ${CMAKE_BINARY_DIR}/gphoto2pp.pc DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig)
-endif (CMAKE_BUILD_TYPE MATCHES "RELEASE")
+endif (CMAKE_BUILD_TYPE MATCHES "^(RELEASE|Release)")
 
 ########################################################################################################################
 # Examples
 ########################################################################################################################
-add_subdirectory (examples)
+if (OPT_BUILD_EXAMPLES)
+    add_subdirectory (examples)
+endif (OPT_BUILD_EXAMPLES)
 
 ########################################################################################################################
 # External Project
