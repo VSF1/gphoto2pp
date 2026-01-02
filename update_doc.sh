@@ -19,7 +19,7 @@ if [ -d "./build/debug/" ]; then
 	mkdir gh-pages
 	cd gh-pages
 	git init
-	git remote add -t gh-pages -f origin https://github.com/maldworth/gphoto2pp.git
+	git remote add -t gh-pages -f origin https://github.com/VSF1/gphoto2pp.git
 	git checkout gh-pages
 	cp -rf ${tempdir}/* ./
 	rm -rf -- ${tempdir}
