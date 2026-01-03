@@ -41,7 +41,7 @@ namespace gphoto2pp
 	 * A wrapper around the gphoto2 CameraList struct.
 	 */
 	class CameraListWrapper
-	{ C
+	{ 
 	public:
 		CameraListWrapper();
 		~CameraListWrapper();
