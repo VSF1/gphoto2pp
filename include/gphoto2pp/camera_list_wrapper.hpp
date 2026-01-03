@@ -25,7 +25,9 @@
 #ifndef CAMERALISTWRAPPER_HPP
 #define CAMERALISTWRAPPER_HPP
 
+#include <iterator>
 #include <string>
+#include <utility>
 
 namespace gphoto2
 {
@@ -35,11 +37,11 @@ namespace gphoto2
 namespace gphoto2pp
 {
 	/**
-	 * \class CameraFileWrapper
-	 * A wrapper around the gphoto2 CameraFile struct.
+	 * \class CameraListWrapper
+	 * A wrapper around the gphoto2 CameraList struct.
 	 */
 	class CameraListWrapper
-	{
+	{ C
 	public:
 		CameraListWrapper();
 		~CameraListWrapper();
@@ -143,6 +145,40 @@ namespace gphoto2pp
 		 * \throw GPhoto2pp::exceptions::gphoto2_exception
 		 */
 		std::pair<std::string, std::string> getPairByName(std::string const & name) const;
+
+		class Iterator
+		{
+		public:
+			using iterator_category = std::forward_iterator_tag;
+			using value_type = std::pair<std::string, std::string>;
+			using difference_type = std::ptrdiff_t;
+			using pointer = void;
+			using reference = value_type;
+
+			Iterator(const CameraListWrapper* wrapper, int index)
+				: m_wrapper(wrapper), m_index(index) {}
+
+			reference operator*() const { return m_wrapper->getPair(m_index); }
+
+			Iterator& operator++() { ++m_index; return *this; }
+
+			Iterator operator++(int) { Iterator tmp = *this; ++(*this); return tmp; }
+
+			bool operator==(const Iterator& other) const
+			{
+				return m_index == other.m_index && m_wrapper == other.m_wrapper;
+			}
+
+			bool operator!=(const Iterator& other) const { return !(*this == other); }
+
+		private:
+			const CameraListWrapper* m_wrapper;
+			int m_index;
+		};
+
+		Iterator begin() const { return Iterator(this, 0); }
+
+		Iterator end() const { return Iterator(this, count()); }
 
 	private:
 		gphoto2::_CameraList* m_cameraList;
