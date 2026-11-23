@@ -28,6 +28,9 @@
 #include <string>
 #include <ctime>
 #include <vector>
+#include <cstdint>
+#include <functional>
+#include <memory>
 
 namespace gphoto2
 {
@@ -38,6 +41,18 @@ namespace gphoto2pp
 {
 	//Forward Declarations
 	enum class CameraFileTypeWrapper : int;
+
+	/**
+	 * \brief C++ callbacks for a handler-backed CameraFile.
+	 * \note libgphoto2's handler API is marked unstable. Callback exceptions
+	 * are converted to GP_ERROR by the bridge.
+	 */
+	struct CameraFileHandlerCallbacks
+	{
+		std::function<int(std::uint64_t &)> size;
+		std::function<int(std::vector<char> &, std::uint64_t &)> read;
+		std::function<int(std::vector<char> const &, std::uint64_t &)> write;
+	};
 	
 	/**
 	 * \class CameraFileWrapper
@@ -47,6 +62,23 @@ namespace gphoto2pp
 	{
 	public:
 		CameraFileWrapper();
+		/**
+		 * \brief Creates a file wrapper owning an open UNIX file descriptor.
+		 * \param[in] fd file descriptor transferred to libgphoto2 on success
+		 * \warning Ownership transfers only on successful construction;
+		 * libgphoto2 closes the descriptor when this wrapper is released.
+		 * \throw GPhoto2pp::exceptions::ArgumentException for a negative fd
+		 * \throw GPhoto2pp::exceptions::gphoto2_exception on construction failure
+		 */
+		explicit CameraFileWrapper(int fd);
+		/**
+		 * \brief Creates a handler-backed camera file.
+		 * \warning The callback API is unstable in libgphoto2.
+		 * \param[in] callbacks size/read/write callbacks
+		 * \throw GPhoto2pp::exceptions::gphoto2_exception
+		 */
+		explicit CameraFileWrapper(
+			CameraFileHandlerCallbacks const & callbacks);
 		~CameraFileWrapper();
 		
 		// Move constructor and move assignment
@@ -86,10 +118,36 @@ namespace gphoto2pp
 		/**
 		 * \brief Sets the camera file's binary data
 		 * \param[in]	file	which will be written into the gphoto2 CameraFile struct
+		 * \note An empty vector clears the file contents.
 		 * \note Direct wrapper for <tt>gp_file_set_data_and_size(...)</tt>
+		 * \throw GPhoto2pp::exceptions::ArgumentException if the data size
+		 * exceeds libgphoto2's size limit
 		 * \throw GPhoto2pp::exceptions::gphoto2_exception
 		 */
 		void setDataAndSize(std::vector<char> const & file);
+
+		/**
+		 * \brief Opens a local file into this wrapper.
+		 * \param[in] filename local path, without embedded NUL bytes
+		 * \warning This API is retained for compatibility; gp_file_open is
+		 * marked legacy by libgphoto2 and may not be available in future ABI.
+		 * \throw GPhoto2pp::exceptions::ArgumentException for embedded NUL
+		 * \throw GPhoto2pp::exceptions::gphoto2_exception
+		 */
+		void open(std::string const & filename);
+
+		/**
+		 * \brief Clears names and data according to the file access type.
+		 * \throw GPhoto2pp::exceptions::gphoto2_exception
+		 */
+		void clear();
+
+		/**
+		 * \brief Copies generic metadata and data from another CameraFile.
+		 * \param[in] source file whose metadata and data are copied
+		 * \throw GPhoto2pp::exceptions::gphoto2_exception
+		 */
+		void copyFrom(CameraFileWrapper const & source);
 		
 		/**
 		 * \brief Gets the file's MIME type
@@ -185,6 +243,8 @@ namespace gphoto2pp
 
 	private:
 		gphoto2::_CameraFile* m_cameraFile;
+		std::shared_ptr<void> m_handlerState;
+		bool m_callerOwnedData = false;
 
 	};
 

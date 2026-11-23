@@ -15,5 +15,36 @@ if(CXXTEST_FOUND)
 		CXXTEST_ADD_TEST( ${testname} "${testname}.cc" "${CMAKE_CURRENT_SOURCE_DIR}/${testssourcefile}" )
 		# Make sure YourLib is linked to each app
 		target_link_libraries( ${testname} gphoto2pp ${LIBS} )
+		if (testname STREQUAL "Helpers_LibraryVersion" AND
+			GPHOTO2PP_HAVE_PORT_INIT_LOCALEDIR)
+			target_compile_definitions (${testname} PRIVATE
+				GPHOTO2PP_HAVE_PORT_INIT_LOCALEDIR)
+		endif ()
+		if (testname STREQUAL "Helpers_LibraryVersion" AND
+			GPHOTO2PP_HAVE_INIT_LOCALEDIR)
+			target_compile_definitions (${testname} PRIVATE
+				GPHOTO2PP_HAVE_INIT_LOCALEDIR)
+		endif ()
+		if (testname STREQUAL "Helpers_LibraryVersion" AND
+			GPHOTO2PP_HAVE_SETTING_GET)
+			target_compile_definitions (${testname} PRIVATE
+				GPHOTO2PP_HAVE_SETTING_GET)
+		endif ()
+		if (testname STREQUAL "Helpers_LibraryVersion" AND
+			GPHOTO2PP_HAVE_SETTING_SET)
+			target_compile_definitions (${testname} PRIVATE
+				GPHOTO2PP_HAVE_SETTING_SET)
+		endif ()
+		if (testname STREQUAL "Helpers_LibraryVersion" AND
+			GPHOTO2PP_HAVE_SETTING_GET_CALLBACK AND
+			GPHOTO2PP_HAVE_SETTING_SET_CALLBACK)
+			target_compile_definitions (${testname} PRIVATE
+				GPHOTO2PP_HAVE_SETTING_CALLBACKS)
+		endif ()
+		if (testname STREQUAL "Helpers_LibraryVersion" AND
+			GPHOTO2PP_HAVE_MESSAGE_CODESET)
+			target_compile_definitions (${testname} PRIVATE
+				GPHOTO2PP_HAVE_MESSAGE_CODESET)
+		endif ()
 	endforeach( testssourcefile ${TESTS_SOURCE_FILES} )
 endif(CXXTEST_FOUND)

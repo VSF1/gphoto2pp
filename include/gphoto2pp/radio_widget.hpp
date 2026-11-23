@@ -36,6 +36,8 @@ namespace gphoto2pp
 	class RadioWidget: public ChoicesWidget
 	{
 	friend class NonValueWidget;
+	friend class CameraWrapper;
+	friend class CameraWidgetWrapper;
 		
 	protected:
 		RadioWidget(gphoto2::_CameraWidget* cameraWidget);

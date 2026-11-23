@@ -36,6 +36,8 @@ namespace gphoto2pp
 	class ToggleWidget: public IntWidget
 	{
 	friend class NonValueWidget;
+	friend class CameraWrapper;
+	friend class CameraWidgetWrapper;
 	
 	protected:
 		ToggleWidget(gphoto2::_CameraWidget* cameraWidget);

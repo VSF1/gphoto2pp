@@ -36,6 +36,8 @@ namespace gphoto2pp
 	class TextWidget: public StringWidget
 	{
 	friend class NonValueWidget;
+	friend class CameraWrapper;
+	friend class CameraWidgetWrapper;
 	
 	protected:
 		TextWidget(gphoto2::_CameraWidget* cameraWidget);
