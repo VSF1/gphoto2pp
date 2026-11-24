@@ -12,9 +12,11 @@ namespace gphoto2 {
 #include <chrono>
 #include <condition_variable>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <memory>
 #include <mutex>
+#include <new>
 #include <stdexcept>
 #include <string>
 
@@ -57,13 +59,15 @@ extern "C" int gp_camera_wait_for_event(
     });
 
     if (file_changed_event_pending) {
-        static CameraFilePath file_path{"changed.jpg", "/DCIM"};
+        void *storage = std::malloc(sizeof(CameraFilePath));
+        if (storage == nullptr) {
+            return GP_ERROR_NO_MEMORY;
+        }
         file_changed_event_pending = false;
         *type = GP_EVENT_FILE_CHANGED;
-        *data = &file_path;
+        *data = new (storage) CameraFilePath{"changed.jpg", "/DCIM"};
     } else {
         *type = GP_EVENT_TIMEOUT;
-        *data = nullptr;
     }
     return GP_OK;
 }

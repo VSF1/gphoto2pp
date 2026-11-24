@@ -64,6 +64,7 @@ namespace gphoto2
 #include <cstdlib>
 #include <cstring>
 #include <limits>
+#include <memory>
 #include <utility>
 #include <chrono>
 #include <condition_variable>
@@ -1577,7 +1578,7 @@ namespace gphoto2pp
 			while(m_listenForEvents == true)
 			{
 				gphoto2::CameraEventType eventType;
-				void* eventData;
+				void* eventData = nullptr;
 				
 				try
 				{
@@ -1590,6 +1591,9 @@ namespace gphoto2pp
 					FILE_LOG(logCRITICAL) << "An Exception was thrown when waiting for camera events. The Camera possibly lost connection with the computer";					
 					return false;
 				}
+
+				std::unique_ptr<void, decltype(&std::free)> ownedEventData(
+					eventData, &std::free);
 				
 				FILE_LOG(logINFO) << "EventType Received: '" << static_cast<int>(eventType) << "'";
 				
