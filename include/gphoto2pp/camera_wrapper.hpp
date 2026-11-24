@@ -561,8 +561,7 @@ namespace gphoto2pp
 		 * \brief Starts monitoring the camera events
 		 * You must subscribe to at least one event type and then perform some
          * action on the camera to see this in action.
-		 * \return true if started listening for events, false if already
-         * listening to events
+		 * \return true if started or already listening to events
 		 */
 		bool startListeningForEvents();
 		
@@ -570,7 +569,8 @@ namespace gphoto2pp
 		 * \brief Signals the thread to stop listening.
 		 * If there is no thread, it leaves the method immediately, if there is
          * a thread running, it is a blocking call which will not return until
-         * the thread exits.
+         * the thread exits, including thread-local cleanup. Do not call it
+         * from an event callback on the listener thread.
 		 */
 		void stopListeningForEvents();
 		

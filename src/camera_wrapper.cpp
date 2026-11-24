@@ -1571,7 +1571,7 @@ namespace gphoto2pp
 		// Set to true so our thread loop will repeat until set back
 		m_listenForEvents = true;
 					
-		std::packaged_task<bool()> event_task([this](){
+		auto event_task = [this](){
 			FILE_LOG(logINFO) << "Starting to listen for camera events";
 			
 			while(m_listenForEvents == true)
@@ -1628,11 +1628,17 @@ namespace gphoto2pp
 			}
 			FILE_LOG(logINFO) << "Stopped to listen for camera events";
 			return true;
-		});
-		
-		m_listenForEventSignalFuture = event_task.get_future();
-		
-		std::thread(std::move(event_task)).detach();
+		};
+		try
+		{
+			m_listenForEventSignalFuture =
+				std::async(std::launch::async, std::move(event_task));
+		}
+		catch (...)
+		{
+			m_listenForEvents = false;
+			throw;
+		}
 
 		return true;
 	}
