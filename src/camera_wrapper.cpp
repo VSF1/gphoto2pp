@@ -64,6 +64,7 @@ namespace gphoto2
 #include <cstdlib>
 #include <cstring>
 #include <limits>
+#include <memory>
 #include <utility>
 #include <chrono>
 #include <condition_variable>
@@ -1571,13 +1572,13 @@ namespace gphoto2pp
 		// Set to true so our thread loop will repeat until set back
 		m_listenForEvents = true;
 					
-		std::packaged_task<bool()> event_task([this](){
+		auto event_task = [this](){
 			FILE_LOG(logINFO) << "Starting to listen for camera events";
 			
 			while(m_listenForEvents == true)
 			{
 				gphoto2::CameraEventType eventType;
-				void* eventData;
+				void* eventData = nullptr;
 				
 				try
 				{
@@ -1590,6 +1591,9 @@ namespace gphoto2pp
 					FILE_LOG(logCRITICAL) << "An Exception was thrown when waiting for camera events. The Camera possibly lost connection with the computer";					
 					return false;
 				}
+
+				std::unique_ptr<void, decltype(&std::free)> ownedEventData(
+					eventData, &std::free);
 				
 				FILE_LOG(logINFO) << "EventType Received: '" << static_cast<int>(eventType) << "'";
 				
@@ -1628,11 +1632,17 @@ namespace gphoto2pp
 			}
 			FILE_LOG(logINFO) << "Stopped to listen for camera events";
 			return true;
-		});
-		
-		m_listenForEventSignalFuture = event_task.get_future();
-		
-		std::thread(std::move(event_task)).detach();
+		};
+		try
+		{
+			m_listenForEventSignalFuture =
+				std::async(std::launch::async, std::move(event_task));
+		}
+		catch (...)
+		{
+			m_listenForEvents = false;
+			throw;
+		}
 
 		return true;
 	}
